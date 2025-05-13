@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sesame Flashcards</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #e3f2fd, #ffffff);
+      color: #333;
+    }
+    header {
+      background-color: #0c559e;
+      color: white;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header img {
+      height: 40px;
+    }
+    nav a {
+      color: white;
+      margin: 0 10px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    .flashcards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+      cursor: pointer;
+      transition: transform 0.3s, background-color 0.3s;
+    }
+    .card:hover {
+      transform: scale(1.05);
+      background-color: #e6f0ff;
+    }
+    .add-form, .filter {
+      margin: 20px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .add-form input, .add-form select, .add-form button {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      flex: 1 1 auto;
+    }
+    .add-form button {
+      background-color: #0c559e;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    footer {
+      background-color: #004080;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 40px;
+    }
+    form input[type="text"], form input[type="password"] {
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    form button {
+      background-color: #0c559e;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      width: 100%;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    section {
+      margin-bottom: 40px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="mariem js/sesame-logo.png.png" alt="Sesame Logo" style="height: 40px;">
+        <h1>Sesame Flashcards</h1>
+    </div>
+    <nav>
+      <a href="#home">Accueil</a>
+      <a href="#flashcards">Flashcards</a>
+      <a href="#contact">Contact</a>
+      <a href="#login">Connexion</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <section id="home">
+      <h2>Bienvenue sur la plateforme d'apprentissage Sesame 🎓</h2>
+      <p>Entraîne-toi avec des flashcards thématiques (Informatique, Maths, etc.).</p>
+    </section>
+
+    <section id="flashcards">
+      <div class="filter">
+        <label for="themeFilter">Filtrer par thème:</label>
+        <select id="themeFilter">
+          <option value="all">Tous</option>
+          <option value="informatique">Informatique</option>
+          <option value="maths">Mathématiques</option>
+          <option value="management">Management</option>
+        </select>
+      </div>
+
+      <div class="flashcards" id="flashcardsContainer"></div>
+
+      <form class="add-form" id="addForm">
+        <input type="text" id="question" placeholder="Question" required />
+        <input type="text" id="answer" placeholder="Réponse" required />
+        <select id="theme">
+          <option value="informatique">Informatique</option>
+          <option value="maths">Mathématiques</option>
+          <option value="management">Management</option>
+        </select>
+        <button type="submit">Ajouter</button>
+      </form>
+    </section>
+
+    <section id="contact">
+      <h2>Contact</h2>
+      <p>📧 contact@sesameuniv.tn</p>
+      <p>📍 Campus SESAME, Ariana, Tunisie</p>
+    </section>
+
+    <section id="login">
+      <h2>Connexion</h2>
+      <form>
+        <input type="text" placeholder="Nom d'utilisateur" required />
+        <input type="password" placeholder="Mot de passe" required />
+        <button type="submit">Se connecter</button>
+      </form>
+    </section>
+  </div>
+
+  <footer>
+    &copy; 2025 Sesame University. Tous droits réservés.
+  </footer>
+
+  <script>
+    const flashcardsContainer = document.getElementById('flashcardsContainer');
+    const form = document.getElementById('addForm');
+    const questionInput = document.getElementById('question');
+    const answerInput = document.getElementById('answer');
+    const themeInput = document.getElementById('theme');
+    const filterSelect = document.getElementById('themeFilter');
+
+    const cards = [
+      { question: "Qu'est-ce que HTML ?", answer: "HyperText Markup Language", theme: "informatique" },
+      { question: "2 + 2 ?", answer: "4", theme: "maths" },
+      { question: "Définition de SWOT ?", answer: "Strengths, Weaknesses, Opportunities, Threats", theme: "management" }
+    ];
+
+    function createCard({ question, answer, theme }) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.theme = theme;
+
+      card.innerHTML = `<strong>${question}</strong><br/><small>${theme}</small><br/><em style="display:none">${answer}</em>`;
+
+      card.addEventListener('click', () => {
+        const answerElem = card.querySelector('em');
+        answerElem.style.display = answerElem.style.display === 'none' ? 'block' : 'none';
+      });
+
+      flashcardsContainer.appendChild(card);
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const newCard = {
+        question: questionInput.value.trim(),
+        answer: answerInput.value.trim(),
+        theme: themeInput.value
+      };
+      if (newCard.question && newCard.answer) {
+        createCard(newCard);
+        questionInput.value = '';
+        answerInput.value = '';
+      }
+    });
+
+    filterSelect.addEventListener('change', () => {
+      const selectedTheme = filterSelect.value;
+      document.querySelectorAll('.card').forEach(card => {
+        card.style.display = selectedTheme === 'all' || card.dataset.theme === selectedTheme ? 'block' : 'none';
+      });
+    });
+
+    // AJAX : Charger les flashcards depuis un fichier JSON
+fetch('flashcards.json')
+  .then(response => {
+    if (!response.ok) throw new Error('Erreur de chargement');
+    return response.json();
+  })
+  .then(data => {
+    data.forEach(createCard);
+  })
+  .catch(error => {
+    console.error('Erreur lors du chargement des flashcards :', error);
+  });
+
+  </script>
+</body>
+</html>
